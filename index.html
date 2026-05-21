@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>사고조사보고서 입력</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background: #f4f5f7;
+    margin: 0;
+    padding: 24px 12px;
+    color: #222;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e3e5e8;
+    border-radius: 10px;
+    padding: 28px 32px;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+  }
+  .desc { font-size: 13px; color: #777; margin: 0 0 24px; }
+  label { font-size: 13px; color: #555; display: block; margin-bottom: 6px; }
+  input[type=text], input[type=email], select {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 14px;
+    border: 1px solid #d0d3d8;
+    border-radius: 6px;
+    background: #fff;
+    font-family: inherit;
+  }
+  input:focus, select:focus { outline: none; border-color: #2b6cb0; }
+  .row { margin-bottom: 14px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 12px; }
+  .dt-grid { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 0.8fr 0.8fr; gap: 6px; }
+  .actions-box {
+    background: #fafbfc;
+    border: 1px solid #e3e5e8;
+    border-radius: 6px;
+    padding: 10px;
+  }
+  .action-row {
+    display: grid;
+    grid-template-columns: 90px 90px 1fr 32px;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .action-row .del {
+    width: 30px; height: 30px;
+    background: #fff;
+    border: 1px solid #d0d3d8;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #999;
+    font-size: 14px;
+  }
+  .action-row .del:hover { color: #c0392b; border-color: #c0392b; }
+  .btn-add {
+    margin-top: 4px;
+    font-size: 13px;
+    background: #fff;
+    border: 1px solid #d0d3d8;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .btn-add:hover { background: #f0f4f8; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+  }
+  .file-hint { font-size: 12px; color: #888; margin-top: 4px; }
+  input[type=file] { font-size: 13px; }
+  .submit {
+    width: 100%;
+    height: 44px;
+    margin-top: 20px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .submit:hover { background: #2456a0; }
+  .submit:disabled { background: #999; cursor: not-allowed; }
+  .msg {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: none;
+  }
+  .msg.ok { background: #e6f7ec; color: #1f7a3a; border: 1px solid #b7e4c7; }
+  .msg.err { background: #fdecec; color: #a02020; border: 1px solid #f5b7b1; }
+  .footer-note { font-size: 12px; color: #888; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>사고조사보고서 입력</h1>
+    <p class="desc">제출 시 입력하신 이메일로 보고서가 발송됩니다.</p>
+
+    <form id="form" enctype="multipart/form-data">
+
+      <div class="row">
+        <label>사고 일시</label>
+        <div class="dt-grid">
+          <select name="year" id="year"></select>
+          <select name="month" id="month"></select>
+          <select name="day" id="day"></select>
+          <select name="hour" id="hour"></select>
+          <select name="minute" id="minute"></select>
+        </div>
+      </div>
+
+      <div class="row grid-2">
+        <div>
+          <label>사고 장소</label>
+          <input type="text" name="place" placeholder="예: 경기도 안산시 단원구 고잔동 222" required />
+        </div>
+        <div>
+          <label>단지번호</label>
+          <input type="text" name="complex_no" placeholder="예: 000067260" required />
+        </div>
+      </div>
+
+      <div class="row grid-3">
+        <div>
+          <label>인명피해</label>
+          <input type="text" name="damage_person" value="없음" />
+        </div>
+        <div>
+          <label>재산피해</label>
+          <input type="text" name="damage_property" value="없음" />
+        </div>
+        <div>
+          <label>출동자</label>
+          <input type="text" name="responders" placeholder="예: 서재원, 박철운" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label>조치사항</label>
+        <div class="actions-box" id="actionsBox">
+          <!-- action rows injected by JS -->
+        </div>
+        <button type="button" class="btn-add" onclick="addActionRow()">+ 행 추가</button>
+      </div>
+
+      <div class="row">
+        <label>원인</label>
+        <input type="text" name="cause" placeholder="예: 사용자 취급 부주의(내부 철거공사 중 파손)" />
+      </div>
+
+      <div class="row">
+        <label>조치결과</label>
+        <input type="text" name="measures" placeholder="예: 파손 배관 교체작업 완료" />
+      </div>
+
+      <div class="section-title">첨부 — 위치도 (1개)</div>
+      <input type="file" name="location_img" accept=".jpg,.jpeg,.png" />
+      <div class="file-hint">jpg / png, 최대 5MB</div>
+
+      <div class="section-title">첨부 — 현장사진 (최대 4개)</div>
+      <input type="file" name="site_imgs[]" accept=".jpg,.jpeg,.png" multiple />
+      <div class="file-hint">jpg / png, 개당 최대 5MB · 최대 4장</div>
+
+      <div class="section-title">받을 이메일 주소</div>
+      <input type="email" name="recipient" placeholder="example@naver.com" required />
+      <div class="footer-note">발신: no-reply-ansansafe@naver.com</div>
+
+      <button type="submit" class="submit" id="submitBtn">저장 및 이메일 발송</button>
+      <div id="msg" class="msg"></div>
+
+    </form>
+  </div>
+
+<script>
+  // ── 드롭다운 초기화 ──
+  function fillSelect(id, start, end, suffix, padZero, defaultVal) {
+    const sel = document.getElementById(id);
+    for (let i = start; i <= end; i++) {
+      const v = padZero ? String(i).padStart(2, '0') : String(i);
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v + suffix;
+      if (defaultVal !== undefined && i === defaultVal) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  }
+  const now = new Date();
+  fillSelect('year', 2024, now.getFullYear() + 1, '년', false, now.getFullYear());
+  fillSelect('month', 1, 12, '월', true, now.getMonth() + 1);
+  fillSelect('day', 1, 31, '일', true, now.getDate());
+  fillSelect('hour', 0, 23, '시', true, now.getHours());
+  fillSelect('minute', 0, 59, '분', true, now.getMinutes());
+
+  // ── 조치사항 행 ──
+  function addActionRow(defaultH, defaultM, defaultC) {
+    const box = document.getElementById('actionsBox');
+    const row = document.createElement('div');
+    row.className = 'action-row';
+
+    const hSel = document.createElement('select');
+    hSel.name = 'action_hour[]';
+    for (let i = 0; i < 24; i++) {
+      const v = String(i).padStart(2, '0');
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v + '시';
+      if (defaultH === v) o.selected = true;
+      hSel.appendChild(o);
+    }
+
+    const mSel = document.createElement('select');
+    mSel.name = 'action_minute[]';
+    for (let i = 0; i < 60; i++) {
+      const v = String(i).padStart(2, '0');
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v + '분';
+      if (defaultM === v) o.selected = true;
+      mSel.appendChild(o);
+    }
+
+    const txt = document.createElement('input');
+    txt.type = 'text';
+    txt.name = 'action_content[]';
+    txt.placeholder = '조치 내용';
+    if (defaultC) txt.value = defaultC;
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'del';
+    del.textContent = '✕';
+    del.onclick = () => row.remove();
+
+    row.appendChild(hSel);
+    row.appendChild(mSel);
+    row.appendChild(txt);
+    row.appendChild(del);
+    box.appendChild(row);
+  }
+  // 초기 1행
+  addActionRow();
+
+  // ── 제출 ──
+  const form = document.getElementById('form');
+  const msgBox = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msgBox.style.display = 'none';
+
+    // 현장사진 4개 제한
+    const siteInput = form.querySelector('input[name="site_imgs[]"]');
+    if (siteInput.files.length > 4) {
+      showMsg('현장사진은 최대 4개까지 첨부할 수 있습니다.', false);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '발송 중...';
+
+    try {
+      const fd = new FormData(form);
+      const res = await fetch('/submit', { method: 'POST', body: fd });
+      const data = await res.json();
+      showMsg(data.message, data.success);
+      if (data.success) form.reset();
+    } catch (err) {
+      showMsg('네트워크 오류: ' + err.message, false);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '저장 및 이메일 발송';
+    }
+  });
+
+  function showMsg(text, ok) {
+    msgBox.textContent = text;
+    msgBox.className = 'msg ' + (ok ? 'ok' : 'err');
+    msgBox.style.display = 'block';
+  }
+</script>
+</body>
+</html>
