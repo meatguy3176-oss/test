@@ -21,7 +21,7 @@ from report_generator import create_accident_report
 NAVER_USER = os.getenv("NAVER_USER", "no-reply-ansansafe@naver.com")
 NAVER_PASS = os.getenv("NAVER_PASS", "")
 
-SMTP_HOST = "smtp.naver.com"
+SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 465
 
 ALLOWED_EXT = {"jpg", "jpeg", "png"}
