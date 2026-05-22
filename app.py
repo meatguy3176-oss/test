@@ -131,6 +131,19 @@ def health():
     """배포 환경 헬스체크용"""
     return {"status": "ok"}, 200
 
+@app.route("/smtp-test")
+def smtp_test():
+    import smtplib, time
+    try:
+        start = time.time()
+        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, timeout=10) as s:
+            s.login(NAVER_USER, NAVER_PASS)
+        elapsed = time.time() - start
+        return jsonify({"result": "OK", "elapsed": f"{elapsed:.1f}s"})
+    except Exception as e:
+        elapsed = time.time() - start
+        return jsonify({"result": "FAIL", "error": str(e), "elapsed": f"{elapsed:.1f}s"})
+
 
 @app.route("/submit", methods=["POST"])
 def submit():
